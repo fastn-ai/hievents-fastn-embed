@@ -312,6 +312,7 @@ use HiEvents\Http\Actions\Organizers\GetOrganizerDeletionStatusAction;
 use HiEvents\Http\Actions\Organizers\GetOrganizerEventsAction;
 use HiEvents\Http\Actions\Organizers\GetOrganizersAction;
 use HiEvents\Http\Actions\Organizers\GetPublicOrganizerAction;
+use HiEvents\Http\Actions\Organizers\Integrations\CreateIntegrationsEmbedTokenAction;
 use HiEvents\Http\Actions\Organizers\Orders\GetOrganizerOrdersAction;
 use HiEvents\Http\Actions\Organizers\Public\SendOrganizerContactMessagePublicAction;
 use HiEvents\Http\Actions\Organizers\Settings\GetOrganizerSettingsAction;
@@ -529,6 +530,9 @@ $router->middleware(['auth:api'])->group(
         $router->post('/accounts/{account_id}/subscription/checkout-session', CreateSubscriptionCheckoutSessionAction::class)->whereNumber('account_id')->middleware('throttle:10,1,account-subscription-checkout');
         $router->post('/accounts/{account_id}/subscription/portal-session', CreateSubscriptionPortalSessionAction::class)->whereNumber('account_id')->middleware('throttle:20,1,account-subscription-portal');
         $router->get('/organizers/{organizer_id}/team', GetOrganizerTeamAction::class);
+        $router->post('/organizers/{organizer_id}/integrations/embed-token', CreateIntegrationsEmbedTokenAction::class)
+            ->whereNumber('organizer_id')
+            ->middleware('throttle:30,1,integrations-embed-token');
         $router->get('/organizers/{organizerId}/stripe/connect_accounts', GetStripeConnectAccountsAction::class);
         $router->post('/organizers/{organizerId}/stripe/connect', CreateStripeConnectAccountAction::class);
         $router->post('/organizers/{organizerId}/stripe/copy_from/{sourceOrganizerId}', CopyStripeConnectAccountAction::class);

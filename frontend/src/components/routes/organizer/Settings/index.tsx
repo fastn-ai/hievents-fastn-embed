@@ -9,11 +9,12 @@ import { PlatformFeesSettings } from "./Sections/PlatformFeesSettings";
 import { DangerZoneSettings } from "./Sections/DangerZoneSettings";
 import { TerminalReadersSettings } from "../../../../ee/box-office/components/routes/organizer/Payments/TerminalReaders";
 import { TrackingPixelSettings } from "./Sections/TrackingPixelSettings";
+import { IntegrationsSettings } from "./Sections/IntegrationsSettings";
 import { PageBody } from "../../../common/PageBody";
 import { PageTitle } from "../../../common/PageTitle";
 import { t } from "@lingui/macro";
 import { Box, Group, NavLink as MantineNavLink, Stack } from "@mantine/core";
-import { IconAlertTriangle, IconDeviceMobile, IconBrandGoogleAnalytics, IconBrandStripe, IconInfoCircle, IconMapPin, IconShare, IconMail, IconCalendarEvent, IconPercentage, IconChartBar } from "@tabler/icons-react";
+import { IconAlertTriangle, IconDeviceMobile, IconBrandGoogleAnalytics, IconBrandStripe, IconInfoCircle, IconMapPin, IconShare, IconMail, IconCalendarEvent, IconPercentage, IconChartBar, IconPlugConnected } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "../../../common/Card";
@@ -76,6 +77,12 @@ const Settings = () => {
                 icon: IconChartBar,
                 component: TrackingPixelSettings,
             },
+            ...(canViewFinancials ? [{
+                id: 'integrations',
+                label: t`Integrations`,
+                icon: IconPlugConnected,
+                component: IntegrationsSettings,
+            }] : []),
             {
                 id: 'danger-zone',
                 label: t`Danger Zone`,

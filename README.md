@@ -29,6 +29,9 @@ Self-hosted or cloud. Your events, your brand, your data.
 
 <br>
 
+> **This fork adds embedded integrations powered by [fastn](https://fastn.ai).** A ticket sold in Hi.Events becomes a
+> contact in the organizer's HubSpot. See [FASTN_INTEGRATION.md](FASTN_INTEGRATION.md) for how it works and how to set it up.
+
 > [!NOTE]
 > **Hi.Events 2.0 is here** with recurring events, reserved seating, a box office, lineups and schedules, single
 > sign-on, team permissions and API keys. [See what's new →](https://github.com/HiEventsDev/hi.events/releases)

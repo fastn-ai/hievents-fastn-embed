@@ -1,0 +1,241 @@
+[
+  {
+    "id": "TC-01",
+    "group": "happy-path",
+    "mode": "live",
+    "scenario": "A ticket is sold to a new person: an attendee.created event arrives for an ACTIVE attendee on a COMPLETED order whose email has no contact in HubSpot.",
+    "input": "{\"event_type\":\"attendee.created\",\"event_sent_at\":\"2026-11-25T18:17:00+00:00\",\"payload\":{\"id\":5,\"order_id\":5,\"event_id\":2,\"email\":\"Capture.Probe@example.com\",\"status\":\"ACTIVE\",\"first_name\":\"Capture\",\"last_name\":\"Probe\"}}",
+    "mockScenarios": null,
+    "pass": "Run returns created = 1, updated = 0, skipped = 0, errors = 0. Reading HubSpot back by the returned contact id shows email, firstname and lastname equal to the attendee's email, first_name and last_name."
+  },
+  {
+    "id": "TC-02",
+    "group": "happy-path",
+    "mode": "live",
+    "scenario": "The same attendee event arrives a second time (the contact from TC-01 now exists).",
+    "input": "{\"event_type\":\"attendee.created\",\"event_sent_at\":\"2026-11-25T18:17:00+00:00\",\"payload\":{\"id\":5,\"order_id\":5,\"event_id\":2,\"email\":\"Capture.Probe@example.com\",\"status\":\"ACTIVE\",\"first_name\":\"Capture\",\"last_name\":\"Probe\"}}",
+    "mockScenarios": null,
+    "pass": "Run returns updated = 1, created = 0, errors = 0, with the same contact id as TC-01. Searching HubSpot by that email returns exactly 1 contact (no duplicate)."
+  },
+  {
+    "id": "TC-03",
+    "group": "mappings",
+    "mode": "mock",
+    "scenario": "Email mapping: attendee email jane.doe@example.com.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.searchContacts": "empty"
+    },
+    "pass": "The contact payload sent to HubSpot has properties.email = jane.doe@example.com; created = 1, errors = 0."
+  },
+  {
+    "id": "TC-04",
+    "group": "mappings",
+    "mode": "mock",
+    "scenario": "First name mapping: attendee first_name Jane.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.searchContacts": "empty"
+    },
+    "pass": "The contact payload sent to HubSpot has properties.firstname = Jane."
+  },
+  {
+    "id": "TC-05",
+    "group": "mappings",
+    "mode": "mock",
+    "scenario": "Last name mapping: attendee last_name Doe.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.searchContacts": "empty"
+    },
+    "pass": "The contact payload sent to HubSpot has properties.lastname = Doe."
+  },
+  {
+    "id": "TC-06",
+    "group": "mappings",
+    "mode": "mock",
+    "scenario": "The contact is the ticket holder, not the buyer: the attendee's email differs from the email on the order.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":109,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.searchContacts": "empty"
+    },
+    "pass": "The contact is created with the attendee's email and name. The order's buyer email is not used; created = 1."
+  },
+  {
+    "id": "TC-07",
+    "group": "filters",
+    "mode": "mock",
+    "scenario": "Attendee status is ACTIVE and its order status is COMPLETED.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "Both filters pass and the contact is written: created + updated = 1, skipped = 0."
+  },
+  {
+    "id": "TC-08",
+    "group": "filters",
+    "mode": "mock",
+    "scenario": "Attendee status is CANCELLED.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":102,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "skipped = 1 with reason naming the status filter; created = 0, updated = 0, and no HubSpot search, create or update call is made."
+  },
+  {
+    "id": "TC-09",
+    "group": "filters",
+    "mode": "mock",
+    "scenario": "Attendee status is AWAITING_PAYMENT (ticket not paid yet).",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":103,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "skipped = 1 with reason naming the status filter; no HubSpot write."
+  },
+  {
+    "id": "TC-10",
+    "group": "filters",
+    "mode": "mock",
+    "scenario": "Attendee is ACTIVE but its order status is AWAITING_OFFLINE_PAYMENT.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":104,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "skipped = 1 with reason naming the order status filter; no HubSpot write."
+  },
+  {
+    "id": "TC-11",
+    "group": "matching",
+    "mode": "mock",
+    "scenario": "A HubSpot contact with the attendee's email already exists.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "The existing contact is updated by its id: updated = 1, created = 0. No create call is made."
+  },
+  {
+    "id": "TC-12",
+    "group": "matching",
+    "mode": "mock",
+    "scenario": "No HubSpot contact has the attendee's email.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.searchContacts": "empty"
+    },
+    "pass": "A contact is created: created = 1, updated = 0. No update call is made."
+  },
+  {
+    "id": "TC-13",
+    "group": "matching",
+    "mode": "mock",
+    "scenario": "Email match ignores letter case: attendee email Jane.Doe@Example.com, HubSpot contact jane.doe@example.com.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":105,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "HubSpot is searched with the lower-cased email and the existing contact is updated: updated = 1, created = 0."
+  },
+  {
+    "id": "TC-14",
+    "group": "matching",
+    "mode": "mock",
+    "scenario": "One buyer holds two tickets under the same email: two attendee events with the same email arrive one after the other.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.searchContacts": "empty"
+    },
+    "pass": "First run created = 1; second run updated = 1 on the same contact id. One contact in total."
+  },
+  {
+    "id": "TC-15",
+    "group": "matching",
+    "mode": "mock",
+    "scenario": "Two tickets in one order for two different people: two attendee events with different emails.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":108,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.searchContacts": "empty"
+    },
+    "pass": "Each run returns created = 1 with a different contact id. Two contacts in total."
+  },
+  {
+    "id": "TC-16",
+    "group": "matching",
+    "mode": "mock",
+    "scenario": "HubSpot answers the create with a conflict because the contact was created a moment earlier.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.createContact": "error",
+      "hubspot.searchContacts": "empty"
+    },
+    "pass": "The flow finds the contact by email and updates it: updated = 1, created = 0, errors = 0."
+  },
+  {
+    "id": "TC-17",
+    "group": "edge-cases",
+    "mode": "mock",
+    "scenario": "The attendee has no email (for example a box-office sale without one).",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":106,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "skipped = 1 with reason 'missing email'; created = 0, updated = 0 and no HubSpot call is made."
+  },
+  {
+    "id": "TC-18",
+    "group": "edge-cases",
+    "mode": "mock",
+    "scenario": "The attendee has an email and first name but an empty last name, and the contact already exists with a last name.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":107,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "updated = 1 and the update payload does not contain lastname, so the last name already in HubSpot is kept."
+  },
+  {
+    "id": "TC-19",
+    "group": "edge-cases",
+    "mode": "mock",
+    "scenario": "An event of another type arrives (attendee.updated or attendee.cancelled).",
+    "input": "{\"event_type\":\"attendee.cancelled\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "skipped = 1 with reason 'unsupported event'; no Hi.Events or HubSpot call is made. A cancelled ticket does not remove or change the contact."
+  },
+  {
+    "id": "TC-20",
+    "group": "edge-cases",
+    "mode": "mock",
+    "scenario": "The event body is malformed: no attendee id or no event id in the payload.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "errors = 1 with errorDetails naming the missing field; no connector call is made."
+  },
+  {
+    "id": "TC-21",
+    "group": "failures",
+    "mode": "mock",
+    "scenario": "Hi.Events no longer has the attendee (404 when reading it).",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":404,\"event_id\":2}}",
+    "mockScenarios": {
+      "hiEvents.getAttendee": "not_found"
+    },
+    "pass": "skipped = 1 with reason 'attendee not found'; no HubSpot call is made."
+  },
+  {
+    "id": "TC-22",
+    "group": "failures",
+    "mode": "mock",
+    "scenario": "HubSpot is rate limiting (429) when searching for the contact.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.searchContacts": "rate_limited"
+    },
+    "pass": "errors = 1 with errorDetails carrying the HubSpot error; created = 0, updated = 0; the run returns normally."
+  },
+  {
+    "id": "TC-23",
+    "group": "failures",
+    "mode": "mock",
+    "scenario": "HubSpot rejects the contact (400, for example an invalid email).",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": {
+      "hubspot.updateContact": "error"
+    },
+    "pass": "errors = 1 with errorDetails carrying HubSpot's message and the attendee id; created = 0, updated = 0."
+  },
+  {
+    "id": "TC-24",
+    "group": "return-shape",
+    "mode": "mock",
+    "scenario": "Any run, whatever the outcome.",
+    "input": "{\"event_type\":\"attendee.created\",\"payload\":{\"id\":101,\"event_id\":2}}",
+    "mockScenarios": null,
+    "pass": "The result always has created, updated, skipped, errors (numbers) and errorDetails (array), plus contactId on a write and reason on a skip."
+  }
+]

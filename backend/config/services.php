@@ -56,6 +56,17 @@ return [
         'secret_key' => env('TURNSTILE_SECRET_KEY'),
     ],
 
+    // fastn embedded integrations. The key and the identity secret stay on the server: only the short-lived
+    // embed token minted with them reaches the browser.
+    'fastn' => [
+        'api_url' => env('FASTN_API_URL', 'https://api.fastn.dev'),
+        'api_key' => env('FASTN_API_KEY'),
+        'idv_secret' => env('FASTN_IDV_SECRET'),
+        'connector_id' => env('FASTN_CONNECTOR_ID'),
+        'connector_auth_method_id' => env('FASTN_CONNECTOR_AUTH_METHOD_ID'),
+        'product_api_url' => env('FASTN_PRODUCT_API_URL'),
+    ],
+
     'open_exchange_rates' => [
         'app_id' => env('OPEN_EXCHANGE_RATES_APP_ID'),
     ],

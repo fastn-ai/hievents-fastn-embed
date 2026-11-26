@@ -1,0 +1,33 @@
+{
+  "payload": {
+    "id": 5,
+    "email": "capture.probe@example.com",
+    "notes": null,
+    "locale": "en",
+    "status": "ACTIVE",
+    "event_id": 2,
+    "order_id": 5,
+    "seat_uid": null,
+    "short_id": "a_fGshH5eiThKR3",
+    "last_name": "Probe",
+    "public_id": "A-REDZDLO",
+    "created_at": "2026-11-25T18:16:57.000000Z",
+    "first_name": "Capture",
+    "product_id": 1,
+    "seat_label": null,
+    "updated_at": "2026-11-25T18:16:57.000000Z",
+    "event_occurrence": {
+      "id": 2,
+      "status": "ACTIVE",
+      "end_date": "2027-03-01T18:00:00.000000Z",
+      "event_id": 2,
+      "short_id": "oc_pOJ1cg8OpmGH1",
+      "start_date": "2027-03-01T10:00:00.000000Z"
+    },
+    "product_price_id": 1,
+    "question_answers": [],
+    "event_occurrence_id": 2
+  },
+  "event_type": "attendee.created",
+  "event_sent_at": "2026-11-25T18:17:00+00:00"
+}

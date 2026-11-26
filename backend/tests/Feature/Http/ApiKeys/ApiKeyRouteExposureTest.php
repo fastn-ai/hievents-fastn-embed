@@ -68,6 +68,7 @@ class ApiKeyRouteExposureTest extends TestCase
         'POST organizers/{organizerId}/stripe/copy_from/{sourceOrganizerId}',
         'POST organizers/{organizerId}/stripe/terminal/readers',
         'POST organizers/{organizerId}/vat-settings',
+        'POST organizers/{organizer_id}/integrations/embed-token',
         'POST users',
         'POST users/me/sso-identities/exchange',
         'POST users/me/sso-identities/{provider}/reauth',

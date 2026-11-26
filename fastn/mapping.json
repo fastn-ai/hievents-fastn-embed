@@ -1,0 +1,92 @@
+{
+  "entities": [
+    {
+      "source": {
+        "entity": "attendee",
+        "connector": "hiEvents"
+      },
+      "target": {
+        "entity": "contact",
+        "connector": "hubspot"
+      },
+      "actions": [
+        {
+          "id": "enrich_source_fields",
+          "action": "listAttendees",
+          "params": {
+            "objectType": "attendee",
+            "resourceName": "attendee"
+          },
+          "labelKey": "label",
+          "valueKey": "name",
+          "connector": "hiEvents"
+        },
+        {
+          "id": "enrich_target_fields",
+          "action": "createContact",
+          "params": {
+            "objectType": "contact",
+            "resourceName": "contact"
+          },
+          "labelKey": "label",
+          "valueKey": "name",
+          "connector": "hubspot"
+        },
+        {
+          "id": "enrich_source_records",
+          "action": "listAttendees",
+          "params": {
+            "objectType": "attendee",
+            "resourceName": "attendee"
+          },
+          "connector": "hiEvents"
+        }
+      ],
+      "mappings": [
+        {
+          "type": "string",
+          "sourceField": "email",
+          "sourceLabel": "Email",
+          "targetField": "properties.email",
+          "targetLabel": "Email"
+        },
+        {
+          "type": "string",
+          "sourceField": "first_name",
+          "sourceLabel": "First name",
+          "targetField": "properties.firstname",
+          "targetLabel": "First Name"
+        },
+        {
+          "type": "string",
+          "sourceField": "last_name",
+          "sourceLabel": "Last name",
+          "targetField": "properties.lastname",
+          "targetLabel": "Last Name"
+        }
+      ],
+      "conditions": [
+        {
+          "field": "status",
+          "label": "status in ACTIVE",
+          "value": "ACTIVE",
+          "operator": "in"
+        },
+        {
+          "field": "order.status",
+          "label": "order.status in COMPLETED",
+          "value": "COMPLETED",
+          "operator": "in"
+        }
+      ],
+      "integrationScope": "Hi.Events Attendee -> HubSpot Contact"
+    }
+  ],
+  "matching": {
+    "strategy": "natural_key",
+    "sourceKey": "email",
+    "targetKey": "properties.email",
+    "stateKeyPrefix": "hiEvents-hubspot:attendee"
+  },
+  "configuredAt": "2026-11-25T18:14:56.515Z"
+}
